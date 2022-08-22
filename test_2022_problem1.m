@@ -123,7 +123,7 @@ stress2 = f2(1)/A;
 stress3 = f3(1)/A;
 
 % Axial and transverse displacements in local and global coords
-[d_x,d_y,D_x,D_y]= deflections(d1,L1,L1/2,alpha1);f
+[d_x,d_y,D_x,D_y]= deflections(d1,L1,L1/2,alpha1);
 
 % --------------------------------- Plot ----------------------------------
 hold on
