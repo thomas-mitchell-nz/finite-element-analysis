@@ -1,6 +1,6 @@
 % ENME302
 % Thomas Mitchell
-% General case frame
+% General case bar
 
 clear
 clc

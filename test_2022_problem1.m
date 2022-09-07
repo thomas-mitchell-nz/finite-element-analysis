@@ -10,7 +10,7 @@ close all
 Disp_mag = 40; % Magnification factor
 N_points = 10; % Number of points on plot
 E = 200*10^9; % Young's modulus in Pa
-I = 5*10^-6; % 2nd moment of area of frame
+I = 1/2*pi*(R2^3-R1^4); % 2nd moment of area of frame
 A = 2*10^-4; % Cross-sectional area of frame in m^2
 Q_nodal = [20000; 40000; 0; 0; 0]; % Global forcing terms in N
 
