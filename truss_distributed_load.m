@@ -37,8 +37,8 @@ yield_stress = 280*10^6; % Pa
 FoS = 2; % factor of sagety
 max_allowable = yield_stress/2;
 max_wbar = wbar_low*3.53; % Guess and check
-max_pressure = max_wbar / frame_depth % Pa
-max_wind_speed = sqrt(max_pressure/0.6) % m/s
+max_pressure = max_wbar / frame_depth; % Pa
+max_wind_speed = sqrt(max_pressure/0.6); % m/s
 
 % Element lengths in m:
 L_h = 2;
@@ -291,13 +291,13 @@ R2=F(4:6,1,2)+F(1:3,1,3); % Reaction forces at right support
 M1=-20000*2.5-40000*2*2.5-20000*3*2.5+R2(2)*2+R2(3); % Moment at left support
 M2=-20000*2.5-40000*2*2.5-20000*3*2.5-R1(2)*2+R1(3); % Moment at right support
 
+D_tip = D(1:3,1,10); % Deflection components at top of truss
+
 for i=1:Num_elements
     axial_stress = abs(f(1,1,i)/A); % Axial stress in element
     bending_stress = (max(abs(f(3,1,i)),abs(f(6,1,i)))*c/I); % Max bending stress in element
-    total_stress = axial_stress + bending_stress % Absolute total stress
+    total_stress = axial_stress + bending_stress; % Absolute total stress
 end
-
-D_tip = D(1:3,1,10) % Deflection components at top of truss
 
 % --------------------------------- Plot ----------------------------------
 
@@ -305,6 +305,7 @@ hold on
 for i=1:Num_elements
     Plot_deflected_shape(node1(i,1),node1(i,2),node2(i,1),node2(i,2),d(:,:,i),L(i),a(i),Disp_mag,N_points);
 end
+
 xlabel('Width (m)') 
 ylabel('Height (m)')
 title('Deflected vs Orignal shape for Max Distributed Wind Loading')
