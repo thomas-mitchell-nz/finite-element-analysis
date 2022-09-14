@@ -1,15 +1,17 @@
-% ENME302
+% ENME302;=
 % Thomas Mitchell
 % General case bar
 
 clear
 clc
 close all
+format compact
+format long
 
 % ------------------------------ Parameters -------------------------------
 
 Disp_mag = 100; % Magnification factor
-N_points = 10; % Number of points on plot
+N_points = 500; % Number of points on plot
 Num_elements = 10; % Total number of elements in truss
 E = 200*10^9; % Young's modulus in Pa
 D1 = 0.150; % Bar outside diameter in m
@@ -193,6 +195,7 @@ KG_total = KG(:,:,1);
 for i=2:Num_elements
     KG_total = KG_total + KG(:,:,i); % Structural stiffness matrix
 end 
+KG_total
 q = KG_total\Q_nodal; % Structural displacements 
 
 % ---------------------------- Displacements ------------------------------
@@ -202,19 +205,20 @@ for i=1:Num_elements
     d(:,i) = Lambda(:,:,i)*D(:,:,i); % Local deflections
     f(:,i) = K(:,:,i)*d(:,:,i); % Local nodal forces
     F(:,i) = Khat(:,:,i)*D(:,:,i); % Global nodal forces
+    abs(F(1,i));
 end 
 
 % --------------------- Reactions and Deflections -------------------------
 
-R1 = F(1:2,1,1); % Reaction forces at left support
-R2 = F(3:4,1,2) + F(1:2,1,3); % Reaction forces at right support
+R1 = F(1:2,1,1) % Reaction forces at left support
+R2 = F(3:4,1,2) + F(1:2,1,3) % Reaction forces at right support
 
 for i=1:Num_elements
     axial_stress = abs(f(1,1,i)/A); % Axial stress in element
     total_stress = axial_stress; % Absolute total stress
 end
-
-D_tip = D(1:2,1,10); % Deflection components at top of truss
+D
+D_tip = 1000 * D(1:2,1,10) % Deflection components at top of truss
 
 % --------------------------------- Plot ----------------------------------
 
@@ -222,3 +226,7 @@ hold on
 for i=1:Num_elements
     Plot_deflected_bar(node1(i,1),node1(i,2),node2(i,1),node2(i,2),D(:,:,i),Disp_mag);
 end
+xlabel('Width (m)') 
+ylabel('Height (m)')
+title('Deflected vs Orignal shape for Bar Element Assumption')
+legend({'Original Structure','Scaled Deflected Structure'},'Location','northeast')

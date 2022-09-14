@@ -1,3 +1,4 @@
+
 % ENME302
 % Thomas Mitchell
 % General case frame
@@ -9,13 +10,14 @@ close all
 % ------------------------------ Parameters -------------------------------
 
 Disp_mag = 100; % Magnification factor
-N_points = 10; % Number of points on plot
+N_points = 30; % Number of points on plot
 Num_elements = 10; % Total number of elements in truss
 E = 200*10^9; % Young's modulus in Pa
 D1 = 0.150; % Frame outside diameter in m
 D2 = 0.140; % Frame inside diameter in m
 A = pi/4*(D1^2-D2^2); % Cross-sectional area of frame in m^2
-I = 1/2*pi*((D1/2)^3-(D2/2)^4);  % 2nd moment of area of frame
+I = 1/4*pi*((D1/2)^4-(D2/2)^4);
+%I = pi*(D1^4)/64 - pi* (D2^4)/64;% 2nd moment of area of frame
 c = 75*10^-3; % Distance to the outermost fibre for bending calculations 
 
 % Global forcing terms in N
@@ -245,7 +247,7 @@ KG_total = KG(:,:,1);
 for i=2:Num_elements
     KG_total = KG_total + KG(:,:,i); % Structural stiffness matrix
 end 
-q = KG_total\Q_nodal; % Structural displacements 
+q = KG_total\Q_nodal % Structural displacements 
 
 % ---------------------------- Displacements ------------------------------
 
@@ -254,23 +256,25 @@ for i=1:Num_elements
     d(:,i) = Lambda(:,:,i)*D(:,:,i); % Local deflections
     f(:,i) = K(:,:,i)*d(:,:,i); % Local nodal forces
     F(:,i) = Khat(:,:,i)*D(:,:,i); % Global nodal forces
+    abs(F(1, i));
 end 
 
 % --------------------- Reactions and Deflections -------------------------
 
-R1=F(1:3,1,1); % Reaction forces at left support
-R2=F(4:6,1,2)+F(1:3,1,3); % Reaction forces at right support
+R1=F(1:3,1,1) % Reaction forces at left support
+R2=F(4:6,1,2)+F(1:3,1,3) % Reaction forces at right support
 
 M1=-20000*2.5-40000*2*2.5-20000*3*2.5+R2(2)*2+R2(3); % Moment at left support
 M2=-20000*2.5-40000*2*2.5-20000*3*2.5-R1(2)*2+R1(3); % Moment at right support
 
 for i=1:Num_elements
-    axial_stress = abs(f(1,1,i)/A); % Axial stress in element
+    axial_stress = abs(f(1,1,i)/A) % Axial stress in element
     bending_stress = abs(max(f(3,1,i),f(6,1,i))*c/I); % Max bending stress in element
-    total_stress = axial_stress + bending_stress; % Absolute total stress
+    total_stress = axial_stress + bending_stress;
+    % Absolute total stress
 end
 
-D_tip = D(1:3,1,10); % Deflection components at top of truss
+D_tip = 1000 * D(1:3,1,10); % Deflection components at top of truss
 
 % --------------------------------- Plot ----------------------------------
 
@@ -278,3 +282,7 @@ hold on
 for i=1:Num_elements
     Plot_deflected_shape(node1(i,1),node1(i,2),node2(i,1),node2(i,2),d(:,:,i),L(i),a(i),Disp_mag,N_points);
 end
+xlabel('Width (m)') 
+ylabel('Height (m)')
+title('Deflected vs Orignal shape for Frame Element Assumption')
+legend({'Original Structure','Scaled Deflected Structure'},'Location','northeast')

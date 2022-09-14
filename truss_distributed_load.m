@@ -5,21 +5,22 @@
 clear
 clc
 close all
+format compact
 
 % ------------------------------ Parameters -------------------------------
 
-Disp_mag = 1; % Magnification factor
+Disp_mag = 100; % Magnification factor
 N_points = 10; % Number of points on plot
 Num_elements = 10; % Total number of elements in truss
 E = 200*10^9; % Young's modulus in Pa
 D1 = 0.150; % Frame outside diameter in m
 D2 = 0.140; % Frame inside diameter in m
 A = pi/4*(D1^2-D2^2); % Cross-sectional area of frame in m^2
-I = 1/2*pi*((D1/2)^3-(D2/2)^4);  % 2nd moment of area of frame
+I = 1/4*pi*((D1/2)^4-(D2/2)^4);  % 2nd moment of area of frame
 c = 75*10^-3; % Distance to the outermost fibre for bending calculations 
 
 % Wind loads in Pa:
-low_pressure = 0.61*10^3;
+low_pressure = 0.61 * 10^3;
 medium_pressure = 0.82*10^3;
 high_pressure = 1.16*10^3;
 very_high_pressure = 1.50*10^3;
@@ -34,10 +35,10 @@ wbar_very_high = very_high_pressure * frame_depth;
 % Yield properties:
 yield_stress = 280*10^6; % Pa
 FoS = 2; % factor of sagety
-max_allowable = yield_stress*2;
-max_wbar = -1012394.28; % Guess and check
-max_pressure = max_wbar / frame_depth; % Pa
-max_wind_speed = sqrt(abs(max_pressure)/0.6); % m/s
+max_allowable = yield_stress/2;
+max_wbar = wbar_low*3.53; % Guess and check
+max_pressure = max_wbar / frame_depth % Pa
+max_wind_speed = sqrt(max_pressure/0.6) % m/s
 
 % Element lengths in m:
 L_h = 2;
@@ -260,8 +261,8 @@ end
 % --------------------------- Equivalent Loads ----------------------------
 
 % Uniformly distributed load:
-[f5_UDL,F5_UDL,Q5_UDL] = equiv_uniform_load(max_wbar,L(5),Lambda(:,:,5),AM(:,:,5));
-[f9_UDL,F9_UDL,Q9_UDL] = equiv_uniform_load(max_wbar,L(9),Lambda(:,:,9),AM(:,:,9));
+[f5_UDL,F5_UDL,Q5_UDL] = equiv_uniform_load(-max_wbar,L(5),Lambda(:,:,5),AM(:,:,5));
+[f9_UDL,F9_UDL,Q9_UDL] = equiv_uniform_load(-max_wbar,L(9),Lambda(:,:,9),AM(:,:,9));
 
 % --------------------------- Structural Terms ----------------------------
 
@@ -292,11 +293,11 @@ M2=-20000*2.5-40000*2*2.5-20000*3*2.5-R1(2)*2+R1(3); % Moment at right support
 
 for i=1:Num_elements
     axial_stress = abs(f(1,1,i)/A); % Axial stress in element
-    bending_stress = abs(max(f(3,1,i),f(6,1,i))*c/I); % Max bending stress in element
-    total_stress = axial_stress + bending_stress; % Absolute total stress
+    bending_stress = (max(abs(f(3,1,i)),abs(f(6,1,i)))*c/I); % Max bending stress in element
+    total_stress = axial_stress + bending_stress % Absolute total stress
 end
 
-D_tip = D(1:3,1,10); % Deflection components at top of truss
+D_tip = D(1:3,1,10) % Deflection components at top of truss
 
 % --------------------------------- Plot ----------------------------------
 
@@ -304,3 +305,7 @@ hold on
 for i=1:Num_elements
     Plot_deflected_shape(node1(i,1),node1(i,2),node2(i,1),node2(i,2),d(:,:,i),L(i),a(i),Disp_mag,N_points);
 end
+xlabel('Width (m)') 
+ylabel('Height (m)')
+title('Deflected vs Orignal shape for Max Distributed Wind Loading')
+legend({'Original Structure','Scaled Deflected Structure'},'Location','northeast')
