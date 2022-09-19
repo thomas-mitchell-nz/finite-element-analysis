@@ -1,6 +1,6 @@
 % ENME302
 % Thomas Mitchell
-% General case frame
+% Truss distributed load
 
 clear
 clc
@@ -35,10 +35,13 @@ wbar_very_high = very_high_pressure * frame_depth;
 % Yield properties:
 yield_stress = 280*10^6; % Pa
 FoS = 2; % factor of sagety
-max_allowable = yield_stress/2;
+max_allowable_stress = yield_stress/FoS;
 max_wbar = wbar_low*3.53; % Guess and check
 max_pressure = max_wbar / frame_depth; % Pa
-max_wind_speed = sqrt(max_pressure/0.6); % m/s
+max_wind_speed_ms = sqrt(max_pressure/0.6); % m/s
+max_wind_speed_kmh = max_wind_speed_ms * 3.6;
+
+active_wbar = wbar_low; % current wbar in use by program
 
 % Element lengths in m:
 L_h = 2;
@@ -261,8 +264,8 @@ end
 % --------------------------- Equivalent Loads ----------------------------
 
 % Uniformly distributed load:
-[f5_UDL,F5_UDL,Q5_UDL] = equiv_uniform_load(-max_wbar,L(5),Lambda(:,:,5),AM(:,:,5));
-[f9_UDL,F9_UDL,Q9_UDL] = equiv_uniform_load(-max_wbar,L(9),Lambda(:,:,9),AM(:,:,9));
+[f5_UDL,F5_UDL,Q5_UDL] = equiv_uniform_load(-active_wbar,L(5),Lambda(:,:,5),AM(:,:,5));
+[f9_UDL,F9_UDL,Q9_UDL] = equiv_uniform_load(-active_wbar,L(9),Lambda(:,:,9),AM(:,:,9));
 
 % --------------------------- Structural Terms ----------------------------
 

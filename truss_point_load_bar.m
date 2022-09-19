@@ -1,6 +1,6 @@
-% ENME302;=
+% ENME302
 % Thomas Mitchell
-% General case bar
+% Truss point load frame
 
 clear
 clc
